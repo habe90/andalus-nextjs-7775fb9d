@@ -1,0 +1,31 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env.local
+    environment:
+      DATABASE_URL: postgresql://andalus:${ANDALUS_POSTGRES_PASSWORD}@postgres:5432/andalus
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: andalus
+      POSTGRES_USER: andalus
+      POSTGRES_PASSWORD: ${ANDALUS_POSTGRES_PASSWORD:?Set ANDALUS_POSTGRES_PASSWORD before starting Docker Compose}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - andalus_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U andalus -d andalus"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+volumes:
+  andalus_postgres:
