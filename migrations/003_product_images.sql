@@ -1,0 +1,1 @@
+CREATE TABLE IF NOT EXISTS product_images(id TEXT PRIMARY KEY,content_type TEXT NOT NULL,data BYTEA NOT NULL,created_at TEXT NOT NULL);
